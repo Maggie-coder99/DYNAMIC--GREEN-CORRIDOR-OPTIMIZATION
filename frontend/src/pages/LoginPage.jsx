@@ -86,10 +86,20 @@ export default function LoginPage() {
                 key={d.role}
                 type="button"
                 className="btn-ghost w-full justify-between"
-                onClick={() => {
+                onClick={async () => {
                   setEmail(d.email);
                   setPassword(d.password);
                   setRole(d.role);
+                  setBusy(true);
+                  setError('');
+                  try {
+                    await login({ email: d.email, password: d.password });
+                    navigate('/app');
+                  } catch (err) {
+                    setError(err.message);
+                  } finally {
+                    setBusy(false);
+                  }
                 }}
               >
                 <span>{d.label}</span>

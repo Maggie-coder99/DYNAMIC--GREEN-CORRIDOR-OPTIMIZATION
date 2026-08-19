@@ -1,5 +1,7 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Activity, ArrowRight, MapPinned, ShieldAlert, Siren, TimerReset, TrafficCone } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const FEATURES = [
   { icon: MapPinned, title: 'Live corridor map', text: 'Track ambulance, hospitals, signals, and traffic bands on a professional operations map.' },
@@ -9,6 +11,28 @@ const FEATURES = [
 ];
 
 export default function LandingPage() {
+  const { login, token } = useAuth();
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  async function launchDashboard() {
+    if (token) {
+      navigate('/app');
+      return;
+    }
+    setBusy(true);
+    setError('');
+    try {
+      await login({ email: 'operator@corridor.demo', password: 'demo123' });
+      navigate('/app');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="min-h-screen">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
@@ -37,13 +61,14 @@ export default function LandingPage() {
             coordinates signal priority in sequence so an emergency vehicle can move through a city grid faster.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/login" className="btn-primary">
-              Launch Dashboard <ArrowRight className="h-4 w-4" />
-            </Link>
+            <button type="button" className="btn-primary" disabled={busy} onClick={launchDashboard}>
+              {busy ? 'Opening…' : 'Launch Dashboard'} <ArrowRight className="h-4 w-4" />
+            </button>
             <a href="#how" className="btn-ghost">
               How it works
             </a>
           </div>
+          {error && <p className="mt-4 text-sm text-red-300">{error}</p>}
           <p className="mt-6 max-w-xl text-xs leading-relaxed text-slate-500">
             This project is an academic software simulation and does not directly control real-world traffic
             infrastructure. Traffic conditions, ambulance movement, and signal behavior are simulated.

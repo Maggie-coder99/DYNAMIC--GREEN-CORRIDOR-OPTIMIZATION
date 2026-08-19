@@ -11,12 +11,6 @@ authRouter.post('/login', validate(loginSchema), (req, res) => {
   if (!user || user.password !== password) {
     return res.status(401).json({ error: 'Invalid email or password', code: 'INVALID_CREDENTIALS' });
   }
-  if (role && role !== user.role) {
-    return res.status(403).json({
-      error: 'Selected role does not match this demo account',
-      code: 'ROLE_MISMATCH',
-    });
-  }
   const token = signToken(user);
   return res.json({
     token,

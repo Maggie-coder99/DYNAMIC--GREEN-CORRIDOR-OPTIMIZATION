@@ -15,14 +15,18 @@ export async function api(path, { method = 'GET', body, token } = {}) {
       body: body ? JSON.stringify(body) : undefined,
     });
   } catch {
-    const error = new Error('Backend unavailable. Start the API on port 4000.');
+    const error = new Error(
+      'Cannot reach the API. Run npm run dev in the project root, then open http://localhost:5173.',
+    );
     error.code = 'BACKEND_UNAVAILABLE';
     throw error;
   }
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const error = new Error(data.error || 'Request failed');
+    const error = new Error(
+      data.error || `Request failed (HTTP ${res.status}). Try operator@corridor.demo / demo123.`,
+    );
     error.code = data.code;
     error.status = res.status;
     throw error;
