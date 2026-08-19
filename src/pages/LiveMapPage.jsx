@@ -1,9 +1,11 @@
 import MapView from '../components/MapView.jsx';
 import SignalLight from '../components/SignalLight.jsx';
 import { useSimulation } from '../context/SimulationContext.jsx';
+import { usePreferences } from '../context/PreferencesContext.jsx';
 
 export default function LiveMapPage() {
   const { state } = useSimulation();
+  const { prefs } = usePreferences();
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold">Live map</h1>
@@ -11,7 +13,7 @@ export default function LiveMapPage() {
         Green / yellow / orange / red polylines are simulated traffic density. Dashed emerald line is the active green
         corridor.
       </p>
-      <MapView state={state} followAmbulance className="h-[560px] w-full overflow-hidden rounded-2xl" />
+      <MapView state={state} followAmbulance={prefs.followMap} className="h-[560px] w-full overflow-hidden rounded-2xl" />
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
         {(state?.signals || []).slice(0, 8).map((s) => (
           <div key={s.id} className="card p-4">

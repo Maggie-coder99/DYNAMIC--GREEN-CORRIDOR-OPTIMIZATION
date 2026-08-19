@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Activity, ArrowRight, MapPinned, ShieldAlert, Siren, TimerReset, TrafficCone } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Activity, ArrowRight, MapPinned, ShieldAlert, TimerReset, TrafficCone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext.jsx';
+import SiteChrome from '../components/SiteChrome.jsx';
 
 const FEATURES = [
   { icon: MapPinned, title: 'Live corridor map', text: 'Track ambulance, hospitals, signals, and traffic bands on a professional operations map.' },
@@ -34,21 +35,8 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pulse-red">
-            <Siren className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-slate-400">Pulse Corridor</p>
-            <p className="font-semibold">Dynamic Green Corridor Optimization</p>
-          </div>
-        </div>
-        <Link to="/login" className="btn-ghost">
-          Operator login
-        </Link>
-      </header>
+    <SiteChrome>
+    <div>
 
       <section className="mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-8 lg:grid-cols-2">
         <div>
@@ -138,10 +126,7 @@ export default function LandingPage() {
           so it presents cleanly on a laptop.
         </p>
       </section>
-
-      <footer className="border-t border-white/10 px-6 py-8 text-center text-sm text-slate-500">
-        Pulse Corridor · Dynamic Green Corridor Optimization for Ambulance · College / portfolio prototype
-      </footer>
     </div>
+    </SiteChrome>
   );
 }

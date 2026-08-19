@@ -22,6 +22,22 @@ export function SimulationProvider({ children }) {
         if (!seen.current.has(n.id)) {
           seen.current.add(n.id);
           setToasts((t) => [...t.slice(-4), n]);
+          try {
+            const prefs = JSON.parse(localStorage.getItem('pulse-prefs') || '{}');
+            if (prefs.soundAlerts && typeof AudioContext !== 'undefined') {
+              const ctx = new AudioContext();
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.frequency.value = 880;
+              gain.gain.value = 0.04;
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start();
+              osc.stop(ctx.currentTime + 0.12);
+            }
+          } catch {
+            /* ignore audio policy */
+          }
         }
       }
     } catch (err) {
@@ -55,13 +71,31 @@ export function SimulationProvider({ children }) {
     [token, refresh],
   );
 
+  const request = useCallback(
+    async (path, { method = 'GET', body } = {}) => {
+      setBusy(true);
+      try {
+        const data = await api(path, { method, body, token });
+        await refresh();
+        setError('');
+        return data;
+      } catch (err) {
+        setError(err.message);
+        throw err;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [token, refresh],
+  );
+
   const dismissToast = useCallback((id) => {
     setToasts((t) => t.filter((x) => x.id !== id));
   }, []);
 
   const value = useMemo(
-    () => ({ state, error, busy, toasts, refresh, act, dismissToast, setError }),
-    [state, error, busy, toasts, refresh, act, dismissToast],
+    () => ({ state, error, busy, toasts, refresh, act, request, dismissToast, setError }),
+    [state, error, busy, toasts, refresh, act, request, dismissToast],
   );
 
   return <SimContext.Provider value={value}>{children}</SimContext.Provider>;

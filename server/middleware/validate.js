@@ -60,3 +60,21 @@ export const optimizeSchema = z.object({
 export const signalOverrideSchema = z.object({
   state: z.enum(['RED', 'YELLOW', 'GREEN', 'EMERGENCY_GREEN']),
 });
+
+export const ambulancePatchSchema = z.object({
+  status: z.enum(['Available', 'On Emergency', 'Returning', 'Maintenance']).optional(),
+  driver: z.string().min(2).optional(),
+  station: z.string().optional(),
+});
+
+export const hospitalPatchSchema = z.object({
+  availableBeds: z.number().int().nonnegative().optional(),
+  edStatus: z.enum(['Accepting', 'Busy', 'Limited']).optional(),
+});
+
+export const contactSchema = z.object({
+  name: z.string().min(2).max(80),
+  email: z.string().email(),
+  topic: z.enum(['demo', 'partnership', 'bug', 'other']).default('demo'),
+  message: z.string().min(10).max(2000),
+});

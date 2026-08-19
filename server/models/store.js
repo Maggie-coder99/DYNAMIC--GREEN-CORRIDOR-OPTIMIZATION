@@ -68,6 +68,7 @@ export function createStore() {
     trips: clone(HISTORIC_TRIPS),
     logs: clone(SYSTEM_LOGS),
     notifications: [],
+    messages: [],
     simulation: {
       running: false,
       paused: false,
@@ -199,6 +200,26 @@ export function createStore() {
     },
     getNotifications() {
       return state.notifications;
+    },
+    markNotificationsRead() {
+      for (const n of state.notifications) n.read = true;
+      return state.notifications;
+    },
+    addMessage(payload) {
+      const row = {
+        id: randomUUID(),
+        name: payload.name,
+        email: payload.email,
+        topic: payload.topic,
+        message: payload.message,
+        at: new Date().toISOString(),
+      };
+      state.messages.unshift(row);
+      state.messages = state.messages.slice(0, 50);
+      return row;
+    },
+    getMessages() {
+      return state.messages;
     },
     simulation() {
       return state.simulation;

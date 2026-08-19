@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import { store } from '../models/store.js';
 import { authRequired, requireRole } from '../middleware/auth.js';
-import { ambulanceSchema, hospitalSchema, signalOverrideSchema, validate } from '../middleware/validate.js';
+import { ambulanceSchema, ambulancePatchSchema, hospitalSchema, hospitalPatchSchema, signalOverrideSchema, validate } from '../middleware/validate.js';
 import { delayFromSignal } from '../algorithms/traffic.js';
+import { recommendHospitals } from '../algorithms/hospitalRecommend.js';
 
 export const fleetRouter = Router();
 
@@ -22,8 +23,28 @@ fleetRouter.post(
   },
 );
 
+fleetRouter.patch(
+  '/ambulances/:id',
+  authRequired,
+  requireRole('administrator', 'emergency_operator', 'traffic_control'),
+  validate(ambulancePatchSchema),
+  (req, res) => {
+    const updated = store.updateAmbulance(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: 'Ambulance not found', code: 'INVALID_AMBULANCE' });
+    store.addLog('info', `Ambulance ${updated.id} updated.`);
+    return res.json({ ambulance: updated });
+  },
+);
+
 fleetRouter.get('/hospitals', authRequired, (_req, res) => {
   res.json({ hospitals: store.getHospitals() });
+});
+
+fleetRouter.get('/hospitals/recommend', authRequired, (req, res) => {
+  const ambulance = store.getAmbulance(req.query.ambulanceId || 'AMB-001');
+  if (!ambulance) return res.status(400).json({ error: 'Invalid ambulance', code: 'INVALID_AMBULANCE' });
+  const ranked = recommendHospitals(ambulance, store.getHospitals());
+  res.json({ recommended: ranked[0], ranked });
 });
 
 fleetRouter.post(
@@ -35,6 +56,18 @@ fleetRouter.post(
     const created = store.createHospital(req.body);
     store.addLog('info', `Hospital ${created.id} added.`);
     res.status(201).json({ hospital: created });
+  },
+);
+
+fleetRouter.patch(
+  '/hospitals/:id',
+  authRequired,
+  requireRole('administrator', 'emergency_operator'),
+  validate(hospitalPatchSchema),
+  (req, res) => {
+    const updated = store.updateHospital(req.params.id, req.body);
+    if (!updated) return res.status(404).json({ error: 'Hospital not found', code: 'INVALID_HOSPITAL' });
+    return res.json({ hospital: updated });
   },
 );
 
@@ -94,4 +127,39 @@ fleetRouter.get('/trips', authRequired, (req, res) => {
     pageSize,
     trips: trips.slice(start, start + pageSize),
   });
+});
+
+fleetRouter.get('/search', authRequired, (req, res) => {
+  const q = (req.query.q || '').toString().trim().toLowerCase();
+  if (q.length < 2) return res.json({ results: [] });
+  const results = [];
+  for (const a of store.getAmbulances()) {
+    if (`${a.id} ${a.driver} ${a.registration} ${a.station}`.toLowerCase().includes(q)) {
+      results.push({ type: 'ambulance', id: a.id, title: a.id, subtitle: `${a.driver} · ${a.status}`, href: '/app/ambulances' });
+    }
+  }
+  for (const h of store.getHospitals()) {
+    if (`${h.id} ${h.name} ${h.address}`.toLowerCase().includes(q)) {
+      results.push({ type: 'hospital', id: h.id, title: h.name, subtitle: h.edStatus, href: '/app/hospitals' });
+    }
+  }
+  for (const s of store.getSignals()) {
+    if (`${s.id} ${s.name} ${s.road}`.toLowerCase().includes(q)) {
+      results.push({ type: 'signal', id: s.id, title: s.name, subtitle: s.road, href: '/app/signals' });
+    }
+  }
+  for (const t of store.getTrips().slice(0, 40)) {
+    if (`${t.id} ${t.ambulanceId} ${t.hospitalId}`.toLowerCase().includes(q)) {
+      results.push({ type: 'trip', id: t.id, title: t.id, subtitle: `${t.ambulanceId} · ${t.status}`, href: '/app/history' });
+    }
+  }
+  res.json({ results: results.slice(0, 12) });
+});
+
+fleetRouter.post('/notifications/read', authRequired, (_req, res) => {
+  res.json({ notifications: store.markNotificationsRead() });
+});
+
+fleetRouter.get('/messages', authRequired, requireRole('administrator'), (_req, res) => {
+  res.json({ messages: store.getMessages() });
 });

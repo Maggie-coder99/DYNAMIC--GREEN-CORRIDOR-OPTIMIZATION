@@ -1,19 +1,33 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import MapView from '../components/MapView.jsx';
 import EmergencyPanel from '../components/EmergencyPanel.jsx';
 import { useSimulation } from '../context/SimulationContext.jsx';
+import { usePreferences } from '../context/PreferencesContext.jsx';
+import { api } from '../services/api.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import { formatDuration } from '../utils/format.js';
 
 export default function EmergencyPage() {
   const { state, act, busy } = useSimulation();
-  const ambulances = useMemo(
-    () => (state?.ambulances || []).filter((a) => a.status === 'Available' || a.id === 'AMB-001'),
-    [state],
-  );
+  const { prefs } = usePreferences();
+  const { token } = useAuth();
   const [ambulanceId, setAmbulanceId] = useState('AMB-001');
   const [hospitalId, setHospitalId] = useState('HOS-001');
   const [level, setLevel] = useState('CRITICAL');
+  const [ranked, setRanked] = useState([]);
+  const ambulances = useMemo(
+    () => (state?.ambulances || []).filter((a) => a.status === 'Available' || a.id === ambulanceId),
+    [state, ambulanceId],
+  );
   const alt = state?.simulation?.alternative;
+
+  useEffect(() => {
+    if (!token || !ambulanceId) return undefined;
+    api(`/api/hospitals/recommend?ambulanceId=${encodeURIComponent(ambulanceId)}`, { token })
+      .then((d) => setRanked(d.ranked || []))
+      .catch(() => setRanked([]));
+    return undefined;
+  }, [ambulanceId, token, state?.hospitals]);
 
   return (
     <div className="space-y-5">
@@ -61,6 +75,14 @@ export default function EmergencyPage() {
           <button className="btn-ghost w-full" disabled={busy} type="button" onClick={() => act('/api/demo/start')}>
             Start Demo Emergency
           </button>
+          <button className="btn-ghost w-full" type="button" onClick={() => ranked[0] && setHospitalId(ranked[0].id)}>
+            Use recommended hospital
+          </button>
+          {ranked[0] && (
+            <p className="text-xs text-cyan-200">
+              Suggested: {ranked[0].name} · {ranked[0].distanceKm} km · {ranked[0].reason}
+            </p>
+          )}
         </form>
         <div className="card space-y-2 p-5">
           <h2 className="font-semibold">Simulation controls</h2>
@@ -99,7 +121,7 @@ export default function EmergencyPage() {
           </button>
         </div>
       )}
-      <MapView state={state} followAmbulance className="h-[460px] w-full overflow-hidden rounded-2xl" />
+      <MapView state={state} followAmbulance={prefs.followMap} className="h-[460px] w-full overflow-hidden rounded-2xl" />
     </div>
   );
 }

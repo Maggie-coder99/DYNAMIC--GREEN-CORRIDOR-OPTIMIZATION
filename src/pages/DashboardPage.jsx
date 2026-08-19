@@ -2,10 +2,12 @@ import KpiCard from '../components/KpiCard.jsx';
 import MapView from '../components/MapView.jsx';
 import EmergencyPanel from '../components/EmergencyPanel.jsx';
 import { useSimulation } from '../context/SimulationContext.jsx';
+import { usePreferences } from '../context/PreferencesContext.jsx';
 import { formatDuration } from '../utils/format.js';
 
 export default function DashboardPage() {
   const { state, act, busy } = useSimulation();
+  const { prefs } = usePreferences();
   const k = state?.kpis;
 
   return (
@@ -28,7 +30,7 @@ export default function DashboardPage() {
       </div>
       <div className="grid gap-4 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <MapView state={state} followAmbulance className="h-[480px] w-full overflow-hidden rounded-2xl" />
+          <MapView state={state} followAmbulance={prefs.followMap} className="h-[480px] w-full overflow-hidden rounded-2xl" />
         </div>
         <EmergencyPanel trip={state?.activeTrip} state={state} />
       </div>

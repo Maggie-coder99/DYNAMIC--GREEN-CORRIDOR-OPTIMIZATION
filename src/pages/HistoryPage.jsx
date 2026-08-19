@@ -71,6 +71,30 @@ export default function HistoryPage() {
           <option value="timeSavedSec">Sort by time saved</option>
           <option value="distanceKm">Sort by distance</option>
         </select>
+        <button
+          type="button"
+          className="btn-ghost"
+          onClick={async () => {
+            const res = await api(`/api/trips?q=${encodeURIComponent(q)}&level=${encodeURIComponent(level)}&sort=${sort}&dir=desc&page=1&pageSize=50`, { token });
+            const rows = res.trips || [];
+            const csv = ['id,ambulance,level,hospital,distanceKm,originalEtaSec,optimizedEtaSec,timeSavedSec,status,startedAt']
+              .concat(
+                rows.map((t) =>
+                  [t.id, t.ambulanceId, t.level, t.hospitalId, t.distanceKm, t.originalEtaSec, t.optimizedEtaSec, t.timeSavedSec, t.status, t.startedAt].join(','),
+                ),
+              )
+              .join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pulse-trip-history.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+          }}
+        >
+          Export CSV
+        </button>
       </div>
       {error && <p className="text-sm text-red-300">{error}</p>}
       <div className="overflow-x-auto card">

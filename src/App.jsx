@@ -4,6 +4,10 @@ import { SimulationProvider } from './context/SimulationContext.jsx';
 import AppLayout from './layouts/AppLayout.jsx';
 import LandingPage from './pages/LandingPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import FaqPage from './pages/FaqPage.jsx';
+import ContactPage from './pages/ContactPage.jsx';
+import NotFoundPage from './pages/NotFoundPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import EmergencyPage from './pages/EmergencyPage.jsx';
 import LiveMapPage from './pages/LiveMapPage.jsx';
@@ -13,6 +17,8 @@ import SignalsPage from './pages/SignalsPage.jsx';
 import HistoryPage from './pages/HistoryPage.jsx';
 import AnalyticsPage from './pages/AnalyticsPage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
+import HelpPage from './pages/HelpPage.jsx';
+import InboxPage from './pages/InboxPage.jsx';
 
 function Protected({ children }) {
   const { token } = useAuth();
@@ -25,6 +31,9 @@ export default function App() {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/faq" element={<FaqPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route
         path="/app"
         element={
@@ -42,8 +51,10 @@ export default function App() {
         <Route path="history" element={<HistoryPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="help" element={<HelpPage />} />
+        <Route path="inbox" element={<InboxPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

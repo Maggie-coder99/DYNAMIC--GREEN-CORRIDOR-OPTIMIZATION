@@ -67,4 +67,23 @@ describe('API', () => {
       .send({ ambulanceId: 'NOPE', hospitalId: 'HOS-001', level: 'HIGH' });
     assert.equal(res.status, 400);
   });
+
+  it('recommends a hospital', async () => {
+    const res = await request(app)
+      .get('/api/hospitals/recommend?ambulanceId=AMB-001')
+      .set('Authorization', `Bearer ${token}`);
+    assert.equal(res.status, 200);
+    assert.ok(res.body.recommended.id);
+  });
+
+  it('accepts a public contact message', async () => {
+    const res = await request(app).post('/api/contact').send({
+      name: 'Riya Student',
+      email: 'riya@college.edu',
+      topic: 'demo',
+      message: 'Please walk me through the green corridor demo.',
+    });
+    assert.equal(res.status, 201);
+    assert.equal(res.body.ok, true);
+  });
 });

@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config/env.js';
+import { publicRouter } from './routes/public.js';
 import { authRouter } from './routes/auth.js';
 import { fleetRouter } from './routes/fleet.js';
 import { opsRouter } from './routes/ops.js';
@@ -46,6 +47,7 @@ export function createApp() {
     });
   });
 
+  app.use('/api', publicRouter);
   app.use('/api/auth', authRouter);
   app.use('/api', fleetRouter);
   app.use('/api', opsRouter);

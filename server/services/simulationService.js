@@ -332,6 +332,12 @@ export function completeTrip(store, status = 'Completed') {
     timeSavedSec: trip.timeSavedSec,
   });
   store.updateAmbulance(trip.ambulanceId, { status: status === 'Completed' ? 'Returning' : 'Available' });
+  if (status === 'Completed') {
+    const hospital = store.getHospital(trip.hospitalId);
+    if (hospital && hospital.availableBeds > 0) {
+      store.updateHospital(trip.hospitalId, { availableBeds: hospital.availableBeds - 1 });
+    }
+  }
   store.addNotification('success', 'Emergency trip completed.');
   store.addLog('info', `Trip ${trip.id} ${status}.`);
   sim.running = false;
