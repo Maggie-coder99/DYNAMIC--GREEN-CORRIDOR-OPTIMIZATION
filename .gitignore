@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+*.log
+.DS_Store
+coverage/
+database/data.json
+database/*.db
+backend/database/*.db
+.vite/
+*.tgz
+.idea/
+.vscode/
