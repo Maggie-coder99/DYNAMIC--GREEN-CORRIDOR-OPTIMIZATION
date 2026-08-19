@@ -13,7 +13,8 @@
     "dev:frontend": "npm run dev -w frontend",
     "build": "npm run build -w frontend",
     "test": "npm run test -w backend && npm run test -w frontend",
-    "start": "npm run start -w backend"
+    "start": "npm run build -w frontend && npm run start -w backend",
+    "start:api": "npm run start -w backend"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

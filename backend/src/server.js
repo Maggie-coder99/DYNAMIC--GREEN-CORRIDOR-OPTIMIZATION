@@ -4,6 +4,6 @@ import { config } from './config/env.js';
 const app = createApp();
 startSimulationClock();
 
-app.listen(config.port, () => {
-  console.log(`Green Corridor API listening on http://localhost:${config.port}`);
+app.listen(config.port, '0.0.0.0', () => {
+  console.log(`Pulse Corridor website listening on http://0.0.0.0:${config.port}`);
 });
