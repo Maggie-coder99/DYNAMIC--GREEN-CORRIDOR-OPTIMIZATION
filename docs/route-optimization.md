@@ -4,7 +4,7 @@ The optimizer does **not** pick the geographically shortest path.
 
 ## Graph
 
-The city is a directed graph of depots, signalized intersections, and hospitals (`backend/src/data/city.js`). Because the demo graph is small, the engine enumerates **all simple paths** (depth-limited) and scores them. This is easy to replace with Dijkstra / A* on a larger network.
+The city is a directed graph of depots, signalized intersections, and hospitals (`server/data/city.js`). Because the demo graph is small, the engine enumerates **all simple paths** (depth-limited) and scores them. This is easy to replace with Dijkstra / A* on a larger network.
 
 ## Score (lower is better)
 

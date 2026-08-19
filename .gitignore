@@ -8,8 +8,9 @@ build/
 coverage/
 database/data.json
 database/*.db
-backend/database/*.db
 .vite/
 *.tgz
 .idea/
 .vscode/
+DYNAMIC--GREEN-CORRIDOR-OPTIMIZATION/
+

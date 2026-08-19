@@ -6,7 +6,7 @@ import { loginSchema, validate } from '../middleware/validate.js';
 export const authRouter = Router();
 
 authRouter.post('/login', validate(loginSchema), (req, res) => {
-  const { email, password, role } = req.body;
+  const { email, password } = req.body;
   const user = store.findUser(email);
   if (!user || user.password !== password) {
     return res.status(401).json({ error: 'Invalid email or password', code: 'INVALID_CREDENTIALS' });

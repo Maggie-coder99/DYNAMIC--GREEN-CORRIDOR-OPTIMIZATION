@@ -15,6 +15,6 @@ See `database/schema/schema.sql` and `database/seed/seed.sql`.
 
 ## Runtime used by the prototype
 
-The Express API ships with a **seeded in-memory store** (`backend/src/models/store.js`) so `npm run dev` works without installing PostgreSQL. The SQL files match that model for Supabase / Railway when you are ready to persist.
+The Express API ships with a **seeded in-memory store** (`server/models/store.js`) so `npm run dev` works without installing PostgreSQL. The SQL files match that model for Supabase / Railway when you are ready to persist.
 
 Set `DATABASE_URL` only after you implement a `pg` adapter; the current version documents the schema rather than requiring a live cluster.

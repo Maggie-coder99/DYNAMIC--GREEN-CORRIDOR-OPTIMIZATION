@@ -2,22 +2,39 @@
   "name": "dynamic-green-corridor",
   "version": "1.0.0",
   "private": true,
-  "description": "Dynamic Green Corridor Optimization for Ambulance — academic simulation",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "description": "Dynamic Green Corridor Optimization for Ambulance — one-folder website",
+  "type": "module",
   "scripts": {
-    "dev": "concurrently -n backend,frontend -c cyan,magenta \"npm run dev -w backend\" \"npm run dev -w frontend\"",
-    "dev:backend": "npm run dev -w backend",
-    "dev:frontend": "npm run dev -w frontend",
-    "build": "npm run build -w frontend",
-    "test": "npm run test -w backend && npm run test -w frontend",
-    "start": "npm run build -w frontend && npm run start -w backend",
-    "start:api": "npm run start -w backend"
+    "dev": "concurrently -n api,web -c cyan,magenta \"node --watch server/server.js\" \"vite --host 0.0.0.0\"",
+    "build": "vite build",
+    "start": "npm run build && node server/server.js",
+    "test": "node --test server/algorithms/*.test.js server/utils/*.test.js server/app.test.js && vitest run"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.469.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^6.28.1",
+    "recharts": "^2.15.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "postcss": "^8.4.49",
+    "supertest": "^7.0.0",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.6",
+    "vitest": "^2.1.8"
   },
   "engines": {
     "node": ">=20"

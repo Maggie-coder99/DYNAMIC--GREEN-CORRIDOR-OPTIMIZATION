@@ -13,7 +13,7 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 import { store } from './models/store.js';
 import { tickSimulation } from './services/simulationService.js';
 
-const frontendDist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../frontend/dist');
+const frontendDist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../dist');
 
 export function createApp() {
   const app = express();

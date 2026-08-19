@@ -45,4 +45,4 @@ Ambulance simulation tick (1s)
 
 ## Future ML hook
 
-`backend/src/algorithms/routeOptimizer.js` is intentionally isolated. A later Python (FastAPI) service could replace `estimateTravelTimeSec` with a learned travel-time model without rewriting the UI.
+`server/algorithms/routeOptimizer.js` is intentionally isolated. A later Python (FastAPI) service could replace `estimateTravelTimeSec` with a learned travel-time model without rewriting the UI.

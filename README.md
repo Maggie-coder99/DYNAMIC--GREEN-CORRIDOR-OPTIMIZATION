@@ -52,21 +52,29 @@ Leaflet + CARTO is used instead of requiring a Mapbox/Google billing key so the 
 
 ## Folder structure
 
+Everything is in **one project folder**:
+
 ```
-frontend/     Vite React app
-backend/      Express API, algorithms, simulation
-database/     schema.sql, seed.sql
-docs/         architecture and algorithm notes
+DYNAMIC--GREEN-CORRIDOR-OPTIMIZATION/
+  src/          website pages (React)
+  server/       API + simulation
+  public/       favicon
+  database/     SQL schema
+  docs/         documentation
+  package.json  single install / start file
 ```
 
 ## Installation
 
+Open a terminal **in this folder** (the one with `package.json`):
+
 ```bash
-git clone <repo>
-cd DYNAMIC--GREEN-CORRIDOR-OPTIMIZATION
 cp .env.example .env
 npm install
+npm run dev
 ```
+
+Then open http://localhost:5173
 
 ## Environment variables
 
@@ -140,11 +148,11 @@ Add captures under `docs/screenshots/` (landing, dashboard, corridor, analytics)
 
 ## Deployment
 
-**Frontend (Vercel)**  
-Root `frontend`, build `npm run build`, output `dist`. Set `VITE_API_URL` to the public API origin **before** build.
+**Website (Vercel)**  
+Root of this folder, build `npm run build`, output `dist`. Set `VITE_API_URL` to the public API origin **before** build.
 
-**Backend (Render / Railway)**  
-Root `backend`, start `npm start`, Node 20+. Set `PORT`, `JWT_SECRET`, `FRONTEND_ORIGIN`.
+**API (Render / Railway)**  
+Start command `node server/server.js`, Node 20+. Set `PORT`, `JWT_SECRET`, `FRONTEND_ORIGIN`.
 
 **Database (Supabase)**  
 Run `database/schema/schema.sql` then seed. Wire `DATABASE_URL` once a Postgres adapter is added.
