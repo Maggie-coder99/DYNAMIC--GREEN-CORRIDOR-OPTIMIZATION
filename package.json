@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "concurrently -n api,web -c cyan,magenta \"node --watch server/server.js\" \"vite --host 0.0.0.0\"",
     "build": "vite build",
-    "start": "npm run build && node server/server.js",
+    "start": "node server/server.js",
     "test": "node --test server/algorithms/*.test.js server/utils/*.test.js server/app.test.js && vitest run"
   },
   "dependencies": {

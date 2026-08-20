@@ -19,10 +19,29 @@ const frontendDist = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 export function createApp() {
   const app = express();
   app.set('trust proxy', 1);
-  app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+          fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+          imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+          connectSrc: ["'self'", 'https:'],
+          workerSrc: ["'self'", 'blob:'],
+        },
+      },
+    }),
+  );
+  const corsOrigin =
+    config.nodeEnv === 'production' && config.frontendOrigin
+      ? config.frontendOrigin.split(',').map((s) => s.trim())
+      : true;
   app.use(
     cors({
-      origin: config.nodeEnv === 'production' ? config.frontendOrigin.split(',').map((s) => s.trim()) : true,
+      origin: corsOrigin,
       credentials: true,
     }),
   );
