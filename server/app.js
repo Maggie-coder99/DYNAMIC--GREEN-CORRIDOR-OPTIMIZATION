@@ -46,6 +46,10 @@ export function createApp() {
     }),
   );
   app.use(express.json({ limit: '200kb' }));
+  app.use((req, _res, next) => {
+    if (req.path.startsWith('/api')) catchUpSimulation();
+    next();
+  });
   app.use(
     rateLimit({
       windowMs: 60 * 1000,
@@ -84,10 +88,28 @@ export function createApp() {
   return app;
 }
 
+let lastSimWall = Date.now();
+
+/** Advance the demo when there is no long-lived process (Vercel). */
+export function catchUpSimulation() {
+  const sim = store.simulation();
+  const now = Date.now();
+  if (!sim.running || sim.paused) {
+    lastSimWall = now;
+    return;
+  }
+  const steps = Math.min(8, Math.floor((now - lastSimWall) / 1000));
+  lastSimWall = now;
+  for (let i = 0; i < steps; i += 1) tickSimulation(store);
+}
+
 export function startSimulationClock() {
   const timer = setInterval(() => {
     const sim = store.simulation();
-    if (sim.running && !sim.paused) tickSimulation(store);
+    if (sim.running && !sim.paused) {
+      lastSimWall = Date.now();
+      tickSimulation(store);
+    }
   }, 1000);
   if (typeof timer.unref === 'function') timer.unref();
   return timer;
