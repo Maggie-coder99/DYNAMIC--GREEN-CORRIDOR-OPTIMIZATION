@@ -148,14 +148,20 @@ Add captures under `docs/screenshots/` (landing, dashboard, corridor, analytics)
 
 ## Deployment
 
-**Website (Vercel)**  
-Root of this folder, build `npm run build`, output `dist`. Set `VITE_API_URL` to the public API origin **before** build.
+Use **one service** that builds the Vite site and runs Express (`npm run build` then `node server/server.js`). Leave `VITE_API_URL` empty so the UI calls `/api` on the same host.
 
-**API (Render / Railway)**  
-Start command `node server/server.js`, Node 20+. Set `PORT`, `JWT_SECRET`, `FRONTEND_ORIGIN`.
+**Vercel (site + API)**  
+Import this GitHub repo. Production branch should contain these files (`api/index.js`, `vercel.json`). Framework Vite, output `dist`. Set `JWT_SECRET` in project env. Do not set `VITE_API_URL`. After deploy, open `/api/health` — it must return JSON `{ "ok": true }`. If that URL shows the website HTML, the `/api` rewrite is wrong.
 
-**Database (Supabase)**  
-Run `database/schema/schema.sql` then seed. Wire `DATABASE_URL` once a Postgres adapter is added.
+Demo state is in memory, so a cold start can reset a running simulation. Keep the dashboard open during a demo.
+
+**Render / Railway / Docker**  
+Build `npm ci && npm run build`, start `node server/server.js`, Node 20+. Set `PORT` (the host usually injects it), `JWT_SECRET`, and `NODE_ENV=production`. Health check: `/api/health`.
+
+**Database (optional later)**  
+Run `database/schema/schema.sql` then seed. `DATABASE_URL` is reserved until a Postgres adapter is added.
+
+Demo login: `operator@corridor.demo` / `demo123`.
 
 ## Authors
 

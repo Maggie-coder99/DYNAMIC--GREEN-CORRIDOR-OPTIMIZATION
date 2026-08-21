@@ -67,7 +67,7 @@ export default function MapView({ state, followAmbulance = false, className = 'h
 
   return (
     <div className={`${className} border border-white/10`}>
-      <MapContainer center={[center.lat, center.lng]} zoom={state.city?.zoom || 14} className="h-full w-full" scrollWheelZoom>
+        <MapContainer center={[center.lat, center.lng]} zoom={state.city?.zoom || 14} className="h-full w-full" style={{ height: '100%', width: '100%' }} scrollWheelZoom>
         <TileLayer url={tileUrl} attribution={attribution} />
         {follow && <Recenter lat={follow.lat} lng={follow.lng} />}
         {trafficLines.map((line) => (

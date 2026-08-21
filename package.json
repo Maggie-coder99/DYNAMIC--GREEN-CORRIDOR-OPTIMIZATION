@@ -8,7 +8,8 @@
     "dev": "concurrently -n api,web -c cyan,magenta \"node --watch server/server.js\" \"vite --host 0.0.0.0\"",
     "build": "vite build",
     "start": "node server/server.js",
-    "test": "node --test server/algorithms/*.test.js server/utils/*.test.js server/app.test.js && vitest run"
+    "preview": "npm run build && node server/server.js",
+    "test": "node --test --test-isolation=none server/algorithms/hospitalRecommend.test.js server/algorithms/routeOptimizer.test.js server/utils/geo.test.js server/app.test.js server/vercelUrl.test.js && vitest run"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -24,16 +25,16 @@
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.28.1",
     "recharts": "^2.15.0",
-    "zod": "^3.24.1"
-  },
-  "devDependencies": {
+    "zod": "^3.24.1",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
-    "concurrently": "^9.1.0",
     "postcss": "^8.4.49",
-    "supertest": "^7.0.0",
     "tailwindcss": "^3.4.17",
-    "vite": "^6.0.6",
+    "vite": "^6.0.6"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "supertest": "^7.0.0",
     "vitest": "^2.1.8"
   },
   "engines": {

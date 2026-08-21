@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { api } from '../services/api.js';
 
 const AuthContext = createContext(null);
@@ -15,6 +15,15 @@ function loadAuth() {
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(loadAuth);
+
+  useEffect(() => {
+    function onExpired() {
+      localStorage.removeItem(STORAGE_KEY);
+      setSession(null);
+    }
+    window.addEventListener('pulse-auth-expired', onExpired);
+    return () => window.removeEventListener('pulse-auth-expired', onExpired);
+  }, []);
 
   const value = useMemo(
     () => ({

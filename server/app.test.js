@@ -17,6 +17,15 @@ describe('API', () => {
     token = res.body.token;
   });
 
+  it('serves API health as JSON', async () => {
+    const res = await request(app).get('/api/health');
+    assert.equal(res.status, 200);
+    assert.equal(res.body.ok, true);
+    const alias = await request(app).get('/health');
+    assert.equal(alias.status, 200);
+    assert.equal(alias.body.ok, true);
+  });
+
   it('rejects unauthenticated fleet access', async () => {
     const res = await request(app).get('/api/ambulances');
     assert.equal(res.status, 401);

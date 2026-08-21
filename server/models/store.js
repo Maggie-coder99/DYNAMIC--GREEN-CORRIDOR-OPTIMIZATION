@@ -231,4 +231,5 @@ export function createStore() {
   };
 }
 
-export const store = createStore();
+export const store = globalThis.__pulseCorridorStore || createStore();
+globalThis.__pulseCorridorStore = store;

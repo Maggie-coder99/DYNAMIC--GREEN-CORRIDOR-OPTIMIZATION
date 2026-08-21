@@ -12,5 +12,4 @@ database/*.db
 *.tgz
 .idea/
 .vscode/
-DYNAMIC--GREEN-CORRIDOR-OPTIMIZATION/
 

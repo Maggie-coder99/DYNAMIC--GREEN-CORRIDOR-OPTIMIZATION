@@ -22,6 +22,7 @@ export function createApp() {
   app.use(
     helmet({
       crossOriginResourcePolicy: { policy: 'cross-origin' },
+      crossOriginEmbedderPolicy: false,
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
@@ -47,20 +48,21 @@ export function createApp() {
   );
   app.use(express.json({ limit: '200kb' }));
   app.use((req, _res, next) => {
-    if (req.path.startsWith('/api')) catchUpSimulation();
+    if (req.path.startsWith('/api') || req.path === '/health') catchUpSimulation();
     next();
   });
   app.use(
     rateLimit({
       windowMs: 60 * 1000,
-      max: 240,
+      max: 1200,
       standardHeaders: true,
       legacyHeaders: false,
+      skip: (req) => req.path === '/api/health' || req.path === '/health',
       message: { error: 'Too many requests', code: 'RATE_LIMIT' },
     }),
   );
 
-  app.get('/api/health', (_req, res) => {
+  app.get(['/api/health', '/health'], (_req, res) => {
     res.json({
       ok: true,
       service: 'green-corridor-api',
@@ -75,7 +77,7 @@ export function createApp() {
   app.use('/api', fleetRouter);
   app.use('/api', opsRouter);
 
-  if (fs.existsSync(frontendDist)) {
+  if (!process.env.VERCEL && fs.existsSync(frontendDist)) {
     app.use(express.static(frontendDist));
     app.get('*', (req, res, next) => {
       if (req.path.startsWith('/api')) return next();
